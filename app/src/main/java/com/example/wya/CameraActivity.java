@@ -24,6 +24,8 @@ import java.util.Arrays;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -45,9 +47,18 @@ public class CameraActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission();
         } else {
-            // Move the openCamera call here
             openCamera();
         }
+
+        // Add the Google Maps fragment to the mapContainer
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Replace YourMapFragment with the actual fragment class for Google Maps
+        MapsFragment mapFragment = new MapsFragment(); // Replace with your Google Maps fragment class
+
+        fragmentTransaction.replace(R.id.map, mapFragment);
+        fragmentTransaction.commit();
     }
 
     private void requestCameraPermission() {
