@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_background"
+    android:background="@drawable/back1"
     tools:context=".MainActivity">
 
     <androidx.cardview.widget.CardView
@@ -13,11 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
+        app:cardElevation="5dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="75dp">
 
         <ImageView
             android:id="@+id/logoImageView"
@@ -57,6 +57,8 @@
             android:backgroundTint="#00FF00"
             android:textColor="#FFFFFF"
             android:layout_marginStart="8dp" />
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

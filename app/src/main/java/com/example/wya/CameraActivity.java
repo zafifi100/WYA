@@ -4,7 +4,13 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
@@ -12,6 +18,9 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
+import android.media.Image;
+import android.media.ImageReader;
+import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -19,6 +28,12 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Button;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import androidx.annotation.NonNull;
@@ -36,6 +51,20 @@ public class CameraActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA_PERMISSION = 200;
 
+    private Button captureButton;
+
+    private ImageReader imageReader;
+
+    private int imageWidth = 1920;
+    private int imageHeight = 1080;
+
+
+    private void initializeImageReader() {
+        imageReader = ImageReader.newInstance(imageWidth, imageHeight, ImageFormat.JPEG, 1);
+        imageReader.setOnImageAvailableListener(onImageAvailableListener, null);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,15 +79,23 @@ public class CameraActivity extends AppCompatActivity {
             openCamera();
         }
 
-        // Add the Google Maps fragment to the mapContainer
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        // Replace YourMapFragment with the actual fragment class for Google Maps
-        MapsFragment mapFragment = new MapsFragment(); // Replace with your Google Maps fragment class
+        MapsFragment mapFragment = new MapsFragment();
 
         fragmentTransaction.replace(R.id.map, mapFragment);
         fragmentTransaction.commit();
+
+        captureButton = findViewById(R.id.captureButton);
+        captureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                captureImage();
+            }
+        });
+
+        initializeImageReader();
     }
 
     private void requestCameraPermission() {
@@ -185,4 +222,97 @@ public class CameraActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void captureImage() {
+        if (cameraDevice == null) {
+            return;
+        }
+
+        // Create a CaptureRequest for image capture
+        try {
+            final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            captureBuilder.addTarget(imageReader.getSurface()); // Assuming you use an ImageReader to capture the image
+
+            cameraCaptureSession.stopRepeating();
+            cameraCaptureSession.capture(captureBuilder.build(), new CameraCaptureSession.CaptureCallback() {
+                @Override
+                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                    super.onCaptureCompleted(session, request, result);
+
+                    // Image capture is complete. Now you can save the image to the drawable folder.
+                    saveImageToDrawable(imageReader.acquireLatestImage());
+                }
+            }, null);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ImageReader.OnImageAvailableListener onImageAvailableListener = new ImageReader.OnImageAvailableListener() {
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+            Image image = reader.acquireLatestImage();
+            if (image != null) {
+                // Save the image to the drawable folder
+                saveImageToDrawable(image);
+                image.close();
+            }
+        }
+    };
+
+
+    private void saveImageToDrawable(Image image) {
+        // Convert the captured image to a Bitmap
+        Bitmap bitmap = imageToBitmap(image);
+        if (bitmap != null) {
+            // Save the Bitmap to the drawable folder
+            saveBitmapToDrawableFolder(bitmap);
+        }
+
+        image.close(); // Close the Image object
+    }
+
+    private Bitmap imageToBitmap(Image image) {
+        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    private void saveBitmapToDrawableFolder(Bitmap bitmap) {
+        FileOutputStream fos = null;
+        try {
+            // Get the app's internal storage directory
+            File internalDir = getFilesDir();
+
+            // Create a File object for the image file
+            File imageFile = new File(internalDir, "myIMG");
+
+            // Create a FileOutputStream
+            fos = new FileOutputStream(imageFile);
+
+            // Compress the bitmap to JPEG format and write it to the file
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+            // Optionally, you can notify the MediaScanner to make the image available in the device's gallery
+            MediaScannerConnection.scanFile(this, new String[]{imageFile.getAbsolutePath()}, null, null);
+
+            // Optionally, you can display a message or perform any other action to inform the user
+            // that the image has been saved.
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+
 }
