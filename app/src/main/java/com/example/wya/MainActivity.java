@@ -30,13 +30,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Start the LoginActivity when the "Register" button is clicked
-        Button registerButton = findViewById(R.id.registerButton); // Assuming you have this button
-        registerButton.setOnClickListener(new View.OnClickListener() {
+        Button logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Navigate back to the LoginActivity
                 Intent loginIntent = new Intent(MainActivity.this, com.example.wya.ui.login.LoginActivity.class);
+                // Clear the back stack to prevent the user from navigating back to the MainActivity
+                loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(loginIntent);
+                finish(); // Finish the MainActivity to remove it from the back stack
+            }
+        });
+
+        Button friendsButton = findViewById(R.id.friendsButton);
+        friendsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to the LoginActivity
+                Intent loginIntent = new Intent(MainActivity.this, FriendsActivity.class);
+                // Clear the back stack to prevent the user from navigating back to the MainActivity
+                loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(loginIntent);
+                finish(); // Finish the MainActivity to remove it from the back stack
             }
         });
     }

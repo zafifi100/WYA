@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF"
-    tools:context=".CameraActivity">
+    tools:context=".CameraActivity"
+    android:background="@drawable/back1">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

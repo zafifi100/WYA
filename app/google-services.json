@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "728472925814",
+    "project_id": "whereyouat-dfdae",
+    "storage_bucket": "whereyouat-dfdae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728472925814:android:f2dfad7a770a40790f9157",
+        "android_client_info": {
+          "package_name": "com.example.wya"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJCgSJTOXgNVeByJagizbGntt8bQ4tO8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
