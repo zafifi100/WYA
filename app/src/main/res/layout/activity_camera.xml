@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,6 +21,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center" />
+        <TextView
+            android:id="@+id/eulerAnglesTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Euler Angles: Pitch = 0.0, Yaw = 0.0, Roll = 0.0"
+            android:textColor="@android:color/white" />
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -33,6 +39,8 @@
         app:cardElevation="4dp"
         android:layout_margin="16dp">
 
+        <!-- Your Map Fragment content goes here -->
+
     </androidx.cardview.widget.CardView>
 
     <LinearLayout
@@ -40,13 +48,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/captureButton"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Capture" />
 
     </LinearLayout>
 </LinearLayout>
