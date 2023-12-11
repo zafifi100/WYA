@@ -8,16 +8,17 @@
     tools:context=".CameraActivity">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="379dp"
+        android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_margin="16dp"
         android:layout_weight="1"
         app:cardCornerRadius="16dp"
+        android:background="@color/white"
         app:cardElevation="4dp">
 
         <TextView
             android:id="@+id/eulerAnglesTextView"
-            android:layout_width="310dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="Euler Angles: Pitch = 0.0, Yaw = 0.0, Roll = 0.0"
