@@ -144,6 +144,10 @@ public class VideoFragment extends Fragment {
                                 // Set the bitmap as the background of the fragment's root view
                                 getView().setBackground(new BitmapDrawable(getResources(), bitmap));
 
+                                Button uploadButton = getView().findViewById(R.id.uploadButton);
+                                uploadButton.setVisibility(View.GONE);
+
+
                             } else {
                                 System.out.println("JSON string is empty or null.");
                             }
@@ -210,7 +214,7 @@ public class VideoFragment extends Fragment {
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
 
                 // Append video file data to the request body
-                appendVideoFile(writer, outputStream);
+                appendVideoFile(writer, outputStream, videoUri);
 
                 // Finish the request
                 writer.write("--" + "*****" + "--");
@@ -242,12 +246,11 @@ public class VideoFragment extends Fragment {
         }
 
         // Helper method to append video file data to the request body
-        private void appendVideoFile(BufferedWriter writer, OutputStream outputStream) throws IOException {
-            // Specify the boundary
+        private void appendVideoFile(BufferedWriter writer, OutputStream outputStream, Uri videoUri) throws IOException {
             String BOUNDARY = "*****";
 
-            // Specify the filename for the video file
-            String fileName = "saved_video.mp4";
+            // Get the filename from the URI
+            String fileName = getFileNameFromUri(videoUri);
 
             // Start the file part
             writer.write("--" + BOUNDARY + "\r\n");
@@ -256,21 +259,22 @@ public class VideoFragment extends Fragment {
             writer.write("\r\n");
             writer.flush();
 
+            // Open the video file using the URI
+            InputStream inputStream = getActivity().getContentResolver().openInputStream(videoUri);
+
             // Write the video file content to the request body
-            FileInputStream fileInputStream = new FileInputStream(new File(getActivity().getFilesDir(), fileName));
             byte[] buffer = new byte[1024];
             int bytesRead;
-            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
             outputStream.flush();
-            fileInputStream.close();
+            inputStream.close();
 
             // End the file part
             writer.write("\r\n");
             writer.flush();
         }
-
         @Override
         protected void onPostExecute(String result) {
             // Handle the API response here
