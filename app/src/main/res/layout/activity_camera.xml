@@ -1,29 +1,23 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/back1"
     android:orientation="vertical"
-    tools:context=".CameraActivity"
-    android:background="@drawable/back1">
+    tools:context=".CameraActivity">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="379dp"
+        android:layout_height="2dp"
+        android:layout_margin="16dp"
         android:layout_weight="1"
         app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        android:layout_margin="16dp">
+        app:cardElevation="4dp">
 
-        <TextureView
-            android:id="@+id/textureView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center" />
         <TextView
             android:id="@+id/eulerAnglesTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="310dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="Euler Angles: Pitch = 0.0, Yaw = 0.0, Roll = 0.0"
@@ -31,13 +25,26 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/map"
+        android:id="@+id/video"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="246dp"
+        android:layout_margin="16dp"
         android:layout_weight="1"
         app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        android:layout_margin="16dp">
+        app:cardElevation="40dp">
+
+        <!-- Your Map Fragment content goes here -->
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="253dp"
+        android:layout_margin="16dp"
+        android:layout_weight="1"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp">
 
         <!-- Your Map Fragment content goes here -->
 

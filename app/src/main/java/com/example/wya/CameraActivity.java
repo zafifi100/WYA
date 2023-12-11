@@ -64,8 +64,10 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         MapsFragment mapFragment = new MapsFragment();
+        VideoFragment videoFragment = new VideoFragment();
 
         fragmentTransaction.replace(R.id.map, mapFragment);
+        fragmentTransaction.replace(R.id.video, videoFragment);
         fragmentTransaction.commit();
     }
 
