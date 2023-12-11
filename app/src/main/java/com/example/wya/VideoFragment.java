@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -141,12 +142,15 @@ public class VideoFragment extends Fragment {
                                 // Convert the base64 string to a bitmap
                                 Bitmap bitmap = decodeBase64ToBitmap(imageEncoded);
 
-                                // Set the bitmap as the background of the fragment's root view
                                 getView().setBackground(new BitmapDrawable(getResources(), bitmap));
+
+                                ImageView imageView = getView().findViewById(R.id.imageView);
+                                //imageView.setRotation(90.0f);
+                                imageView.setImageResource(R.drawable.arrow);
+                                imageView.setVisibility(View.VISIBLE);
 
                                 Button uploadButton = getView().findViewById(R.id.uploadButton);
                                 uploadButton.setVisibility(View.GONE);
-
 
                             } else {
                                 System.out.println("JSON string is empty or null.");
