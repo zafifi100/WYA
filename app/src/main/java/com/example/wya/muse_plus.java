@@ -50,7 +50,9 @@ public class muse_plus {
     private float[] matrix_dot_vector(float[][] a, float[] b){
         float[] c = new float[3];
         for (int i = 0; i < 3; i++){
-            c[i] = np_vector_dot(a[i], b);
+            try {
+                c[i] = np_vector_dot(a[i], b);
+            }catch (NullPointerException ie){System.out.println("NULL!");}
         }
         return c;
     }

@@ -13,6 +13,13 @@
         android:text="Upload Video"
         android:layout_centerInParent="true"/>
 
+    <Button
+        android:id="@+id/takeVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Take Video" />
+
     <TextView
         android:id="@+id/videoInfoTextView"
         android:layout_width="wrap_content"

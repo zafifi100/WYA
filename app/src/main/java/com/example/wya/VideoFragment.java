@@ -16,6 +16,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.JsonReader;
@@ -40,16 +41,18 @@ import java.net.URL;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Dictionary;
-import org.json.JSONObject;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 import static android.app.Activity.RESULT_OK;
 
-import com.google.common.net.MediaType;
-import com.google.firebase.database.util.JsonMapper;
 
 public class VideoFragment extends Fragment {
+
+    private static int sent = 0;
+    private static int taken = 0;
 
     private static final int PICK_VIDEO_REQUEST = 1;
     public static String imageEncoded = "";
@@ -69,10 +72,66 @@ public class VideoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_video, container, false);
 
         Button uploadButton = view.findViewById(R.id.uploadButton);
+        Button takeVideo = view.findViewById(R.id.takeVideo);
+
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openGallery();
+                if(taken == 1){
+                    saveVideoToInternalStorage(TakeVideo.uri);
+                    sent = 1;
+                    taken = 0;
+                    new APICallTask(true).execute("https://98e4-72-33-2-141.ngrok-free.app/predict");
+                    return;
+                }
+                if (sent == 0)
+                    openGallery();
+                else {
+                    new APICallTask(false).execute("https://98e4-72-33-2-141.ngrok-free.app/check");
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(imageEncoded);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    String imageEncoded = null;
+                    try {
+                        imageEncoded = jsonObject.getString("image_encoded");
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    // Convert the base64 string to a bitmap
+                    Bitmap bitmap = decodeBase64ToBitmap(imageEncoded);
+
+                    getView().setBackground(new BitmapDrawable(getResources(), bitmap));
+
+                    ImageView imageView = getView().findViewById(R.id.imageView);
+                    imageView.setRotation(-90.0f);
+                    imageView.setImageResource(R.drawable.arrow);
+                    imageView.setVisibility(View.VISIBLE);
+
+                    Button uploadButton = getView().findViewById(R.id.uploadButton);
+                    uploadButton.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        takeVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), TakeVideo.class);
+                startActivity(intent);
+
+                Button uploadButton = getView().findViewById(R.id.uploadButton);
+                uploadButton.setText("Check for image!");
+                Button takeVideo = getView().findViewById(R.id.takeVideo);
+                takeVideo.setVisibility(View.GONE);
+                taken = 1;
+                //takeVideo.setVisibility(View.GONE);
+                //saveVideoToInternalStorage(TakeVideo.uri);
+                //new APICallTask(true).execute("https://98e4-72-33-2-141.ngrok-free.app/predict");
             }
         });
 
@@ -127,7 +186,13 @@ public class VideoFragment extends Fragment {
                 Log.d("VideoFragment", "Video saved successfully: " + filePath);
                 Toast.makeText(getActivity(), "Video saved successfully", Toast.LENGTH_SHORT).show();
 
-                new APICallTask().execute("https://73e4-2600-6c98-a500-71e-7123-c9-1c41-7b9c.ngrok-free.app/predict");
+                Button uploadButton = getView().findViewById(R.id.uploadButton);
+                if (uploadButton.getText().toString().equals("Check for image!"))
+                    new APICallTask(false).execute("https://98e4-72-33-2-141.ngrok-free.app/check");
+                else {
+                    sent = 1;
+                    new APICallTask(true).execute("https://98e4-72-33-2-141.ngrok-free.app/predict");
+                }
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -154,6 +219,10 @@ public class VideoFragment extends Fragment {
 
                             } else {
                                 System.out.println("JSON string is empty or null.");
+                                if(sent == 1) {
+                                    Button uploadButton = getView().findViewById(R.id.uploadButton);
+                                    uploadButton.setText("Check for image!");
+                                }
                             }
 
                         } catch (Exception e) {
@@ -201,6 +270,12 @@ public class VideoFragment extends Fragment {
 
 
     private class APICallTask extends AsyncTask<String, Void, String> {
+
+        private boolean send;
+
+        public APICallTask(boolean send) {
+            this.send = send;
+        }
         @Override
         protected String doInBackground(String... params) {
             String apiUrl = params[0];
@@ -209,21 +284,29 @@ public class VideoFragment extends Fragment {
                 // Create the connection
                 URL url = new URL(apiUrl);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoOutput(true);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + "*****");
 
-                // Create the output stream for writing the request body
-                OutputStream outputStream = urlConnection.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
+                if (send) {
+                    // If send is true, configure the connection for a POST request
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setRequestMethod("POST");
+                    urlConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + "*****");
 
-                // Append video file data to the request body
-                appendVideoFile(writer, outputStream, videoUri);
+                    // Create the output stream for writing the request body
+                    OutputStream outputStream = urlConnection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
 
-                // Finish the request
-                writer.write("--" + "*****" + "--");
-                writer.flush();
-                writer.close();
+                    // Append video file data to the request body
+                    // appendVideoFile(writer, outputStream, videoUri);
+                    appendVideoFile(writer, outputStream, TakeVideo.uri);
+
+                    // Finish the request
+                    writer.write("--" + "*****" + "--");
+                    writer.flush();
+                    writer.close();
+                } else {
+                    // If send is false, configure the connection for a GET request
+                    urlConnection.setRequestMethod("GET");
+                }
 
                 // Get the response from the server
                 int responseCode = urlConnection.getResponseCode();
@@ -249,7 +332,6 @@ public class VideoFragment extends Fragment {
             }
         }
 
-        // Helper method to append video file data to the request body
         private void appendVideoFile(BufferedWriter writer, OutputStream outputStream, Uri videoUri) throws IOException {
             String BOUNDARY = "*****";
 
@@ -286,7 +368,6 @@ public class VideoFragment extends Fragment {
                 Log.d("API_RESPONSE", result);
                 VideoFragment.imageEncoded = result;
 
-                // Log or process the API response as needed
             } else {
                 Log.e("API_RESPONSE", "Error in API response");
             }
