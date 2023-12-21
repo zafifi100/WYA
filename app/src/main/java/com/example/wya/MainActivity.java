@@ -18,10 +18,16 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
+    String userName = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        userName = getIntent().getStringExtra("user");
+
 
         // Start the CameraActivity when the "Start Camera" button is clicked
         Button startCameraButton = findViewById(R.id.startCameraButton);
@@ -29,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent cameraIntent = new Intent(MainActivity.this, CameraActivity.class);
+
+
+                cameraIntent.putExtra("user", userName);
+
+
                 startActivity(cameraIntent);
             }
         });

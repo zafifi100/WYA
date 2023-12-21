@@ -38,5 +38,12 @@
         android:layout_marginBottom="3dp"
         android:visibility="gone"/>
 
+<!--    <ImageView-->
+<!--        android:id="@+id/arrowImageView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src="@drawable/arrow" />-->
+
+
 </RelativeLayout>
 

@@ -44,6 +44,11 @@ public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private FirebaseAuth auth;
     private ProgressBar loadingProgressBar;
+
+
+    String userName = "";
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +138,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
+
+
+                userName = usernameEditText.getText().toString();
+
+
                 signIn(usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
@@ -141,6 +151,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
+
+
+                userName = usernameEditText.getText().toString();
+
+
                 createAccount(usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
@@ -175,6 +190,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+
+
+                            mainIntent.putExtra("user", userName);
+
+
                             startActivity(mainIntent);
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
@@ -200,6 +220,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+
+
+                            mainIntent.putExtra("user", userName);
+
+
                             startActivity(mainIntent);
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");

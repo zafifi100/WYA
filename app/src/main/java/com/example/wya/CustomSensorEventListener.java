@@ -81,7 +81,7 @@ public class CustomSensorEventListener implements SensorEventListener {
             my_muse_plus.update_acc(sensorEvent.values);
         }
 
-        //If there is a change in Accelerometer values
+        //If there is a change in Magnometer values
         if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             //Fetching the accelerometer values
             my_muse_plus.update_mag(sensorEvent.values, sensorEvent.timestamp);
